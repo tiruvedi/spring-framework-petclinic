@@ -16,7 +16,7 @@ pipeline {
     stage('store') {
       steps {
         sh '''sh \'mv target/petclinic.war target/petclinic-$BUILD_NUMBER.war\'
-sh \'aws s3 cp target/petclinic-$BUILD_NUMBER.war s3://python-rohith-yadav\''''
+                sh \'aws s3 cp target/petclinic-$BUILD_NUMBER.war s3://python-rohith-yadav\''''
       }
     }
 
