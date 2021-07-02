@@ -23,7 +23,7 @@ pipeline {
         
         stage('Deploy Stage') {
             steps {
-                sh 'scp target/petclinic-$BUILD_NUMBER.war root@10.0.15.141:/opt/tomcat/webapps/petclinic.war'
+                sh 'scp target/petclinic-$BUILD_NUMBER.war root@10.0.6.204:/opt/tomcat/webapps/petclinic.war'
             }
         }
     }
