@@ -1,6 +1,6 @@
-CREATE DATABASE IF NOT EXISTS demo_database;
+CREATE DATABASE IF NOT EXISTS sample_database;
 
-ALTER DATABASE demo_database
+ALTER DATABASE sample_database
   DEFAULT CHARACTER SET utf8
   DEFAULT COLLATE utf8_general_ci;
 
