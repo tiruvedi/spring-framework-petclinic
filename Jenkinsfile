@@ -4,26 +4,34 @@ pipeline {
     stages {
         stage('SCM checkout') {
             steps {
-                git 'git@github.com:kuntrapakam/spring-framework-petclinic.git'
+                git 'https://github.com/kuntrapakam/spring-framework-petclinic.git'
             }
         }
-        
-        stage('Build Stage') {
+        stage('SonarQube analysis') {
             steps {
-                sh '/opt/maven/bin/mvn clean package'
+                withSonarQubeEnv('sonarqube') {
+                    sh "mvn clean package sonar:sonar"
+                }
             }
         }
-        
-        stage('Storing war into artifactory') {
+        stage("Quality gate") {
             steps {
-                sh 'mv target/petclinic.war target/petclinic-$BUILD_NUMBER.war'
-                sh 'aws s3 cp target/petclinic-$BUILD_NUMBER.war s3://python-rohith-yadav'
+                waitForQualityGate abortPipeline: true
+            }
+            post {
+                always {
+                    junit '**/*.xml'
+                }
             }
         }
-        
-        stage('Deploy Stage') {
+        stage('nexus') {
             steps {
-                sh 'scp target/petclinic-$BUILD_NUMBER.war root@10.0.6.204:/opt/tomcat/webapps/petclinic.war'
+                nexusArtifactUploader artifacts: [[artifactId: 'spring-framework-petclinic', classifier: '', file: 'target/petclinic.war', type: 'war']], credentialsId: 'nexus', groupId: 'org.springframework.samples', nexusUrl: '54.224.198.41:8081', nexusVersion: 'nexus3', protocol: 'http', repository: 'chocolate', version: '5.3.8'
+            }
+        }
+        stage('deploy') {
+            steps{
+                sh 'sudo scp target/petclinic.war /root/tomcat/webapps'
             }
         }
     }
